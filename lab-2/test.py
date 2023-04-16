@@ -75,7 +75,7 @@ net.cuda(device)  # GPU
 utils.test(testloader, net, device, classes)
 
 print("\n###########################################################################")
-print("#            Own-CNN Feature Extraction from MNIST to SVHN datasets       #")
+print("#             Own-CNN Transfer Learning from MNIST to SVHN datasets       #")
 print("###########################################################################\n")
 
 # Define transform to normalize the data
@@ -91,4 +91,15 @@ testset = torchvision.datasets.SVHN(root='./dataset', split='test', download=Tru
 testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0)
 
 # http://ufldl.stanford.edu/housenumbers/
+utils.test(testloader, net, device, classes)
+
+print("\n###########################################################################")
+print("#                    Own-CNN Fine Tuning on SVHN datasets                 #")
+print("###########################################################################\n")
+
+PATH = 'models/cnn_svhn.pth'
+net = utils.CNN()
+net.load_state_dict(torch.load(PATH))
+net.cuda(device)  # GPU
+
 utils.test(testloader, net, device, classes)

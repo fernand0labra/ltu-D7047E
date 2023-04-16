@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchvision.models
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -8,8 +9,7 @@ class AlexNet(nn.Module):
         super().__init__()
 
         # AlexNet Model
-        self.alexnet = torch.hub.load('pytorch/vision:v0.10.0', 'alexnet', weights=None, force_reload=True) \
-            if mode == "fine_tuning" else torch.hub.load('pytorch/vision:v0.10.0', 'alexnet', force_reload=True)
+        self.alexnet = torchvision.models.alexnet(weights=torchvision.models.AlexNet_Weights.DEFAULT)
 
         # Alter last linear layer to output on the 10 class CIFAR10 dataset
         self.alexnet.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
