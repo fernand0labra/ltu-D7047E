@@ -1,18 +1,14 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
-import utils
-import matplotlib.pyplot as plt
+import utils.model_utils as model_utils
+import utils.visualization_utils as visualization_utils
 
 # Hyperparameters
-batch_size = 512
+batch_size = 128
 
 # Define execution device (CPU or GPU)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-print("\n###########################################################################")
-print("#                   CNN Small Training on MNIST dataset                   #")
-print("###########################################################################\n")
 
 classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
 
@@ -25,28 +21,24 @@ transform = transforms.Compose([
 # Load the training and test datasets
 testset = torchvision.datasets.MNIST(root='./dataset', train=False, download=True, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0)
+images, labels = next(iter(testloader))
+images = images.to(device)  # GPU
+
+print("\n###########################################################################")
+print("#                   CNN Small Training on MNIST dataset                   #")
+print("###########################################################################\n")
 
 PATH = 'models/cnn_mnist_small.pth'
-net = utils.CNN()
+net = model_utils.CNN()
 net.load_state_dict(torch.load(PATH))
-net.cuda(device)  # GPU
+net.to(device)  # GPU
 
-image = torch.as_tensor(next(iter(testloader))[0][0]).to(device)
-# plt.imshow(image[0].cpu().numpy(), cmap='gray')
-# plt.show()
+# model_utils.test(testloader, net, device, classes)
+features = model_utils.extract_features(batch_size, images, net)
 
-conv1_feature_maps = net.maxpool(net.relu(net.conv1(image)))
-
-conv1_flattened_features = conv1_feature_maps\
-    .view(16, 14 * 14).cpu().detach().numpy()
-conv2_flattened_features = net.maxpool(net.relu(net.conv2(conv1_feature_maps)))\
-    .view(32, 7 * 7).cpu().detach().numpy()
-features = [conv2_flattened_features]
-
-utils.visualize_pca(features)
-utils.visualize_tsne(features)
-# utils.visualize_filters_activations([conv1_flattened_features, conv2_flattened_features])
-utils.test(testloader, net, device, classes)
+# visualization_utils.visualize_pca(features, images.cpu(), labels, scatter_images=True, img_limit=0.4)
+visualization_utils.visualize_tsne(features, images.cpu(), labels, scatter_images=False, img_limit=2)
+# visualization_utils.visualize_filters_activations(images[0], net)
 
 print("\n###########################################################################")
 print("#                  CNN Medium Training on MNIST dataset                   #")
@@ -54,17 +46,11 @@ print("#########################################################################
 
 PATH = 'models/cnn_mnist_medium.pth'
 net.load_state_dict(torch.load(PATH))
-net.cuda(device)  # GPU
+net.to(device)  # GPU
 
-conv1_feature_maps = net.maxpool(net.relu(net.conv1(image)))
+# model_utils.test(testloader, net, device, classes)
+features = model_utils.extract_features(batch_size, images, net)
 
-conv1_flattened_features = conv1_feature_maps\
-    .view(16, 14 * 14).cpu().detach().numpy()
-conv2_flattened_features = net.maxpool(net.relu(net.conv2(conv1_feature_maps)))\
-    .view(32, 7 * 7).cpu().detach().numpy()
-features = [conv2_flattened_features]
-
-utils.visualize_pca(features)
-utils.visualize_tsne(features)
-# utils.visualize_filters_activations(image, net)
-utils.test(testloader, net, device, classes)
+# visualization_utils.visualize_pca(features, images.cpu(), labels, scatter_images=True, img_limit=2)
+visualization_utils.visualize_tsne(features, images.cpu(), labels, scatter_images=False, img_limit=2)
+# visualization_utils.visualize_filters_activations(images[0], net)
