@@ -1,0 +1,121 @@
+Question 1 - What are Language Models? Where and how are Language Models used?
+
+Language models are a type of AI model that learn a probability distribution of the
+patterns in the words and the syntax structure. Once trained, they are given a start word or
+prime sequence to generate text. They do this by taking the word with the highest probability of
+appearance with the context given.
+
+### ChatGPT
+
+Language models are a type of artificial intelligence system that is designed to understand natural language and
+generate new text based on that understanding. In simple terms, a language model is a program that takes a sequence
+of words as input and tries to predict the next word in the sequence.
+
+Language models are used in a wide range of applications, including machine translation, speech recognition,
+sentiment analysis, text summarization, and chatbots. They are also used in search engines, content recommendation
+systems, and many other natural language processing tasks.
+
+One of the most common applications of language models is in text generation, where they are used to generate new
+sentences, paragraphs, or even entire documents based on a given input. Another common application is in language
+understanding, where the model is used to classify text or extract information from it.
+
+#######################################################################################################################
+
+Question 2 - How can you use a trained Char-RNN model as a Character Level Language Model?
+
+When you have a long-term memory as in the case of LSTMs together with the short-term context of the
+hidden state, it might be possible to have not only the in-word positional context (e.g. vowels and consonants)
+but also the syntax positional context (e.g. subject, predicate, complement, etc.).
+
+For generating new text, depending on the implementation of the network, you can input a one-hot representation
+of the char based on the vocabulary given (i.e. the alphabet and common language symbols) or an embedding to a lower
+dimension. The output of the model should be an array with size the vocabulary and contents the probability of
+appearance of the next element.
+
+### ChatGPT
+
+The Char-RNN model itself can be used as a Language Model without training a separate model. In this case,
+the Char-RNN model can be used to generate new text by feeding the generated characters back into the model as input,
+and continuing the generation process for a desired length of text. This is known as "sampling" from the Char-RNN model.
+
+#######################################################################################################################
+
+Question 3 - How can you train a Word Level Language Model?
+
+With the same idea as the Char Language Model, you could either have a vocabulary of N words and perform a one-hot
+encoding (however having arrays of size N - English vocabulary contains up to 1 million words) or you could perform
+an embedding to a lower dimension and have a relatively quick training of the network. Another solution is to consider
+only a specific section of the vocabulary that you are addressing (e.g. historical novels).
+
+### Chat GPT
+
+Data Preparation: ...
+
+Word Embedding:
+Before training a word-level language model, the text data needs to be transformed into a numerical
+format. One way to achieve this is by using word embeddings, which represent each word as a high-dimensional vector.
+There are several pre-trained word embeddings available, or you can train your own on a large corpus of text.
+
+Model Architecture: ...
+
+Training: ...
+
+Evaluation:
+Once the model is trained, it needs to be evaluated on a held-out test set to determine its performance.
+This typically involves measuring the model's perplexity, which is a measure of how well the model predicts the next
+word given the previous words in the sentence.
+
+Inference:
+Finally, the trained model can be used for generating new text by sampling from the model's distribution
+over the next word given the previous words in the sentence.
+
+#######################################################################################################################
+
+Question 4 - Formally describe the inference model that an RNN trained to predict the next word represents?
+
+A trained RNN has learned the statistical patterns in the text that has being used during training. When inputting
+a new word, the network applies the learned weights to the representation of the input and gives more importance to
+one or other word in the vocabulary for the next prediction, considering as well the short-term context (hidden state)
+and the long-term context (memory state with LSTMs). The output will be the probabilities of appearance of the words
+in the vocabulary based on those contexts. The word with the highest probability is most likely to be next.
+
+### ChatGPT
+
+An RNN trained to predict the next word represents a conditional language model. Given a sequence of words up to the
+current time step, the RNN predicts the probability distribution over the possible next words. This is done by
+computing a hidden state representation of the current sequence, and using it to predict the next word through a
+softmax activation function.
+
+The RNN is trained to minimize the negative log-likelihood of the true next word given the current sequence. This way,
+the model learns to capture the conditional dependencies between words in the training data, which allows it to
+generate plausible sequences of words when used for language generation tasks.
+
+#######################################################################################################################
+
+Question 5 - How will you generate the "probability of existence" of an input sequence of words, given a trained
+RNN Language Model?
+
+Having a sequence of words as "This is a sequence" you could obtain the initial hidden state that the network should
+consider by inputting "This", "is", "a", "sequence" and extract the probabilities of the next words given the
+previous one. Once you have initialized the hidden state with the sequence of words you want to have in the context,
+you could use the next word with higher probability to continue the process of text generation.
+
+### ChatGPT
+
+To generate the probability of existence of an input sequence of words given a trained RNN Language Model, you can use
+the model's forward method to predict the next word in the sequence based on the previous words. This process is
+repeated for each word in the sequence to get the probability of existence of the entire sequence.
+
+Specifically, given an input sequence of words w_1, w_2, ..., w_n, the probability of the entire sequence can be
+calculated using the chain rule of probability as follows:
+
+P(w_1, w_2, ..., w_n) = P(w_1) * P(w_2|w_1) * P(w_3|w_1, w_2) * ... * P(w_n|w_1, w_2, ..., w_{n-1})
+Here, P(w_i|w_1, w_2, ..., w_{i-1}) represents the probability of the ith word given the previous words.
+
+To calculate these conditional probabilities, you can use the trained RNN Language Model's forward method to predict
+the next word in the sequence given the previous words. This will give you a probability distribution over the
+vocabulary of possible next words. You can then use this distribution to calculate the probability of each possible
+next word and use it to update the conditional probability of the next word given the previous words.
+
+Once you have calculated the probability of the entire sequence, you can use it to compare the likelihood of different
+sequences and choose the most probable one.
