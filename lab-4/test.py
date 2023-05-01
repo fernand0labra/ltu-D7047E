@@ -1,4 +1,6 @@
 import os
+import torch
+import utils
 
 model = "char_shakespeare_gru.pt"
 predict_len = "100"
@@ -28,4 +30,10 @@ for prime_str in coherent_primes:
               " --temperature=" + temperature +
               " --cuda")
 
-# os.system("tensorboard --logdir=\"./logs\"")
+net = torch.load("./models/word_bach_lstm.pt")
+
+word_primes = ["The", "which is", "He he he", "He was the", "Leipzig is known as"]
+for prime_str in word_primes:
+    print(utils.generate(net, prime_str, predict_len=3))
+
+os.system("tensorboard --logdir=\"./logs\"")
